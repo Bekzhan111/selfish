@@ -53,8 +53,17 @@ const imageFilenames = [
   'IMG_8925.JPG.jpeg',
 ]
 
-// Create image paths for public folder (served at root)
-const images = imageFilenames.map(filename => `/images/${filename}`)
+// Helper function to get optimized filename (for gallery thumbnails)
+const getOptimizedFilename = (filename) => {
+  const base = filename.replace(/\.(jpeg|JPEG)$/, '')
+  return `${base}.jpg`
+}
+
+// Create optimized image paths for gallery (smaller, faster loading)
+const optimizedImages = imageFilenames.map(filename => `/images/optimized/${getOptimizedFilename(filename)}`)
+
+// Create original image paths for modal (full quality when clicked)
+const originalImages = imageFilenames.map(filename => `/images/${filename}`)
 
 const ProductGallery = () => {
   const [selectedImage, setSelectedImage] = useState(null)
@@ -70,17 +79,18 @@ const ProductGallery = () => {
   return (
     <>
       <div className="gallery">
-        {images.map((image, index) => (
+        {optimizedImages.map((image, index) => (
           <div
             key={index}
             className="gallery-item"
-            onClick={() => openModal(image)}
+            onClick={() => openModal(originalImages[index])}
           >
             <img
               src={image}
               alt={`Product ${index + 1}`}
               loading="lazy"
               className="gallery-image"
+              decoding="async"
             />
           </div>
         ))}
@@ -96,6 +106,7 @@ const ProductGallery = () => {
               src={selectedImage}
               alt="Product"
               className="modal-image"
+              loading="eager"
             />
           </div>
         </div>
