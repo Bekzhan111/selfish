@@ -59,12 +59,12 @@ const getOptimizedFilename = (filename) => {
   return `${base}.jpg`
 }
 
-// Create original image paths for gallery (use originals for now to ensure they load)
+// Create original image paths for gallery (use originals to ensure they load)
 const galleryImages = imageFilenames.map(filename => `/images/${filename}`)
 
-// Use optimized images for modal (they're high quality and load much faster than 4-5MB originals)
-// The optimized images are 1200px wide which is perfect for modal viewing
-const modalImages = imageFilenames.map(filename => `/images/optimized/${getOptimizedFilename(filename)}`)
+// Use original images for modal too (to ensure all images load correctly)
+// Note: .jpeg files are small (165KB), .jpg files are large (4-5MB) but will work
+const modalImages = imageFilenames.map(filename => `/images/${filename}`)
 
 const ProductGallery = () => {
   const [selectedImage, setSelectedImage] = useState(null)
@@ -115,6 +115,13 @@ const ProductGallery = () => {
               alt="Product"
               className="modal-image"
               loading="eager"
+              onError={(e) => {
+                console.error('Failed to load modal image:', selectedImage);
+                // Try optimized version as fallback
+                const optimizedPath = selectedImage.replace('/images/', '/images/optimized/').replace(/\.(jpeg|JPEG)$/, '.jpg');
+                console.log('Trying optimized fallback:', optimizedPath);
+                e.target.src = optimizedPath;
+              }}
             />
           </div>
         </div>
