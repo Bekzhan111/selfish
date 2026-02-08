@@ -59,10 +59,10 @@ const getOptimizedFilename = (filename) => {
   return `${base}.jpg`
 }
 
-// Create optimized image paths for gallery (smaller, faster loading)
-const optimizedImages = imageFilenames.map(filename => `/images/optimized/${getOptimizedFilename(filename)}`)
+// Create original image paths for gallery (use originals for now to ensure they load)
+const galleryImages = imageFilenames.map(filename => `/images/${filename}`)
 
-// Use optimized images for modal too (they're high quality and load much faster than 4-5MB originals)
+// Use optimized images for modal (they're high quality and load much faster than 4-5MB originals)
 // The optimized images are 1200px wide which is perfect for modal viewing
 const modalImages = imageFilenames.map(filename => `/images/optimized/${getOptimizedFilename(filename)}`)
 
@@ -80,7 +80,7 @@ const ProductGallery = () => {
   return (
     <>
       <div className="gallery">
-        {optimizedImages.map((image, index) => (
+        {galleryImages.map((image, index) => (
           <div
             key={index}
             className="gallery-item"
@@ -94,10 +94,10 @@ const ProductGallery = () => {
               decoding="async"
               onError={(e) => {
                 console.error('Failed to load gallery image:', image);
-                // Fallback to original image if optimized fails
-                const originalPath = image.replace('/images/optimized/', '/images/').replace(/\.jpg$/, imageFilenames[index].endsWith('.jpeg') ? '.jpeg' : '.jpg');
-                console.log('Trying fallback:', originalPath);
-                e.target.src = originalPath;
+                // Try optimized version as fallback
+                const optimizedPath = image.replace('/images/', '/images/optimized/').replace(/\.(jpeg|JPEG)$/, '.jpg');
+                console.log('Trying optimized fallback:', optimizedPath);
+                e.target.src = optimizedPath;
               }}
             />
           </div>
