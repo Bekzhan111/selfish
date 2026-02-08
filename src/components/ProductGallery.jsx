@@ -92,6 +92,13 @@ const ProductGallery = () => {
               loading="lazy"
               className="gallery-image"
               decoding="async"
+              onError={(e) => {
+                console.error('Failed to load gallery image:', image);
+                // Fallback to original image if optimized fails
+                const originalPath = image.replace('/images/optimized/', '/images/').replace(/\.jpg$/, imageFilenames[index].endsWith('.jpeg') ? '.jpeg' : '.jpg');
+                console.log('Trying fallback:', originalPath);
+                e.target.src = originalPath;
+              }}
             />
           </div>
         ))}
