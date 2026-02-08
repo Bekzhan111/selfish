@@ -107,6 +107,19 @@ const ProductGallery = () => {
               alt="Product"
               className="modal-image"
               loading="eager"
+              onError={(e) => {
+                console.error('Failed to load image:', selectedImage);
+                // Fallback to optimized version if original fails
+                let optimizedPath = selectedImage.replace('/images/', '/images/optimized/');
+                // Convert .jpeg to .jpg for optimized folder
+                optimizedPath = optimizedPath.replace(/\.(jpeg|JPEG)$/, '.jpg');
+                // If already .jpg, keep it
+                if (!optimizedPath.endsWith('.jpg')) {
+                  optimizedPath = optimizedPath.replace(/\.jpg$/, '.jpg');
+                }
+                console.log('Falling back to:', optimizedPath);
+                e.target.src = optimizedPath;
+              }}
             />
           </div>
         </div>
