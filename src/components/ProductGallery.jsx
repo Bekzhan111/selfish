@@ -62,8 +62,9 @@ const getOptimizedFilename = (filename) => {
 // Create optimized image paths for gallery (smaller, faster loading)
 const optimizedImages = imageFilenames.map(filename => `/images/optimized/${getOptimizedFilename(filename)}`)
 
-// Create original image paths for modal (full quality when clicked)
-const originalImages = imageFilenames.map(filename => `/images/${filename}`)
+// Use optimized images for modal too (they're high quality and load much faster than 4-5MB originals)
+// The optimized images are 1200px wide which is perfect for modal viewing
+const modalImages = imageFilenames.map(filename => `/images/optimized/${getOptimizedFilename(filename)}`)
 
 const ProductGallery = () => {
   const [selectedImage, setSelectedImage] = useState(null)
@@ -83,7 +84,7 @@ const ProductGallery = () => {
           <div
             key={index}
             className="gallery-item"
-            onClick={() => openModal(originalImages[index])}
+            onClick={() => openModal(modalImages[index])}
           >
             <img
               src={image}
@@ -107,19 +108,6 @@ const ProductGallery = () => {
               alt="Product"
               className="modal-image"
               loading="eager"
-              onError={(e) => {
-                console.error('Failed to load image:', selectedImage);
-                // Fallback to optimized version if original fails
-                let optimizedPath = selectedImage.replace('/images/', '/images/optimized/');
-                // Convert .jpeg to .jpg for optimized folder
-                optimizedPath = optimizedPath.replace(/\.(jpeg|JPEG)$/, '.jpg');
-                // If already .jpg, keep it
-                if (!optimizedPath.endsWith('.jpg')) {
-                  optimizedPath = optimizedPath.replace(/\.jpg$/, '.jpg');
-                }
-                console.log('Falling back to:', optimizedPath);
-                e.target.src = optimizedPath;
-              }}
             />
           </div>
         </div>
